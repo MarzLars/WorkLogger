@@ -1,0 +1,4 @@
+# .gitignore
+__pycache__
+time_log.csv
+time_log.xlsx
