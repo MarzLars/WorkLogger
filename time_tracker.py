@@ -34,16 +34,17 @@ class TimeTracker:
         """
         Pause the time tracker.
         """
-        self._update_elapsed_time()
-        self.running = False
+        if self.running:
+            self.elapsed_time += time.time() - self.start_time
+            self.running = False
 
     def stop(self):
         """
         Stop the time tracker and return the elapsed time.
         """
-        self._update_elapsed_time()
-        self.running = False
-        return self.elapsed_time
+        if self.running:
+            self.elapsed_time += time.time() - self.start_time
+            self.running = False
 
     def reset(self):
         """
@@ -52,6 +53,11 @@ class TimeTracker:
         self.start_time = None
         self.elapsed_time = 0
         self.running = False
+
+    def get_elapsed_time(self):
+        if self.running:
+            return self.elapsed_time + (time.time() - self.start_time)
+        return self.elapsed_time
 
     def _apply_header_style(self, sheet):
         """
@@ -105,32 +111,26 @@ class TimeTracker:
         """
         Log the elapsed time to both Excel and CSV files.
         """
+        # Ensure log files exist
+        self.ensure_log_file_exists(file_path, csv_file_path)
+
+        # Calculate hours, minutes, and seconds
         hours, remainder = divmod(self.elapsed_time, 3600)
         minutes, seconds = divmod(remainder, 60)
-        now = datetime.now()
-        current_date = now.date()
-        week_number = now.isocalendar()[1]
-        
+
+        # Log to CSV
+        current_date = datetime.now().strftime("%Y-%m-%d")
+        week_number = datetime.now().isocalendar()[1]
+        self.log_time_to_csv(description, current_date, week_number, hours, minutes, seconds, csv_file_path)
+
         # Log to Excel
         if os.path.exists(file_path):
             workbook = load_workbook(file_path)
-            sheet = workbook.active
         else:
             workbook = Workbook()
-            sheet = workbook.active
-            sheet.append(['Description', 'Date', 'Week', 'Time Spent', 'Hours', 'Minutes', 'Seconds'])
-            self._apply_header_style(sheet)
-
-        row = [description, current_date, week_number, f"={int(hours)} + ({int(minutes)}/60)", int(hours), int(minutes), int(seconds)]
-        sheet.append(row)
-        
-        self._apply_row_style(sheet, sheet.max_row)
-        self._adjust_column_widths(sheet)
+        sheet = workbook.active
+        sheet.append([description, current_date, week_number, self.elapsed_time, hours, minutes, seconds])
         workbook.save(file_path)
-        
-        # Log to CSV
-        self.log_time_to_csv(description, current_date, week_number, hours, minutes, seconds, csv_file_path)
-        self.reset()
 
     def log_time_to_csv(self, description, current_date, week_number, hours, minutes, seconds, csv_file_path):
         """

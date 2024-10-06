@@ -7,6 +7,7 @@ import csv
 import tkinter as tk
 from tkinter import simpledialog, messagebox, ttk
 from time_tracker import TimeTracker
+import unittest
 
 # Set the appearance mode and color theme
 customtkinter.set_appearance_mode("dark")
@@ -36,6 +37,7 @@ class TimeTrackerUI:
         self.debug_visible = False
         self.tracker = TimeTracker()
         self.update_job = None
+        self.running = False  # Flag to control the running state
 
         self._setup_ui()
 
@@ -116,6 +118,10 @@ class TimeTrackerUI:
         self.restart_button.pack(fill="x", padx=5, pady=5)
         self.restart_button.pack_forget()
 
+        self.test_button = customtkinter.CTkButton(master=self.frame, text="Run Tests", command=self.run_tests, width=100)
+        self.test_button.pack(fill="x", padx=5, pady=5)
+        self.test_button.pack_forget()
+
     # Button Actions
     def start(self):
         """Start the time tracker."""
@@ -126,6 +132,7 @@ class TimeTrackerUI:
 
     def pause(self):
         """Pause the time tracker."""
+        self.running = False
         self.tracker.pause()
         self.start_button.configure(fg_color="yellow", text_color="black", state="normal")
         if self.update_job:
@@ -134,6 +141,7 @@ class TimeTrackerUI:
 
     def stop(self):
         """Stop the time tracker and prompt for log description."""
+        self.running = False
         self.tracker.stop()
         self.start_button.configure(fg_color="#1f6aa5", text_color="white", state="normal")
         if self.update_job:
@@ -196,11 +204,13 @@ class TimeTrackerUI:
             self.clear_logs_button.pack_forget()
             self.toggle_logs_button.pack_forget()
             self.restart_button.pack_forget()
+            self.test_button.pack_forget()
             self.log_frame.pack_forget()
         else:
             self.clear_logs_button.pack(fill="x", padx=5, pady=5)
             self.toggle_logs_button.pack(fill="x", padx=5, pady=5)
             self.restart_button.pack(fill="x", padx=5, pady=5)
+            self.test_button.pack(fill="x", padx=5, pady=5)
             if self.logs_visible:
                 self.log_frame.pack(fill="both", padx=5, pady=5, expand=True)
         self.debug_visible = not self.debug_visible
@@ -214,11 +224,23 @@ class TimeTrackerUI:
     def update_elapsed_time(self):
         """Update the elapsed time label every second."""
         if self.tracker.running:
-            elapsed_time = time.time() - self.tracker.start_time + self.tracker.elapsed_time
+            elapsed_time = self.tracker.get_elapsed_time()
             hours, remainder = divmod(elapsed_time, 3600)
             minutes, seconds = divmod(remainder, 60)
             self.elapsed_time_label.configure(text=f"{int(hours)}h {int(minutes)}m {int(seconds)}s")
         self.update_job = self.root.after(1000, self.update_elapsed_time)
+
+    def run_tests(self):
+        """Run the unit tests and increment time values."""
+        self.running = True
+        self.increment_time()
+
+    def increment_time(self):
+        """Increment hours, minutes, and seconds by 10 each second."""
+        if self.running:
+            self.tracker.elapsed_time += 10 * 3600 + 10 * 60 + 10  # Increment by 10 hours, 10 minutes, 10 seconds
+            print(f"Elapsed Time: {self.tracker.elapsed_time // 3600} hours, {(self.tracker.elapsed_time % 3600) // 60} minutes, {self.tracker.elapsed_time % 60} seconds")
+            self.root.after(1000, self.increment_time)  # Schedule the next increment in 1 second
 
     def run(self):
         """Run the Tkinter main loop."""
