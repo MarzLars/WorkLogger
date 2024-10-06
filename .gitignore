@@ -2,3 +2,6 @@
 __pycache__
 time_log.csv
 time_log.xlsx
+*.csv
+*.csv
+*.xlsx
