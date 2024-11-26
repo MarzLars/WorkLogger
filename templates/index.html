@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WorkLogger</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>WorkLogger</h1>
+        <div class="elapsed-time" id="elapsed-time">00:00:00</div>
+        <div class="controls">
+            <button id="start-button">Start</button>
+            <button id="pause-button">Pause</button>
+            <button id="stop-button">Stop</button>
+        </div>
+        <div class="logs" id="logs">
+            <!-- Logs will be displayed here -->
+        </div>
+        <div class="delimiter-selection">
+            <label for="delimiter">Select CSV Delimiter:</label>
+            <select id="delimiter">
+                <option value=",">Comma (,)</option>
+                <option value=";">Semicolon (;)</option>
+                <option value="|">Pipe (|)</option>
+            </select>
+        </div>
+        <div class="export-button">
+            <button id="export-button">Export Logs</button>
+        </div>
+        <div class="insertion-mode">
+            <button id="insertion-mode-button">Toggle Insertion Mode</button>
+        </div>
+        <div id="insertion-mode" style="display: none;">
+            <input type="text" id="description-input" placeholder="Description">
+            <input type="number" id="time-input" placeholder="Time Spent (seconds)">
+            <button id="save-button">Save</button>
+            <button id="cancel-button">Cancel</button>
+        </div>
+        <div class="date-selection">
+            <label for="date-dropdown">Select Date:</label>
+            <select id="date-dropdown">
+                <!-- Options will be populated dynamically -->
+            </select>
+        </div>
+        <div class="time-inputs">
+            <label for="hours-input">Hours:</label>
+            <input type="number" id="hours-input" placeholder="Hours">
+            <label for="minutes-input">Minutes:</label>
+            <input type="number" id="minutes-input" placeholder="Minutes">
+            <label for="seconds-input">Seconds:</label>
+            <input type="number" id="seconds-input" placeholder="Seconds">
+        </div>
+    </div>
+    <script src="/static/js/scripts.js"></script>
+</body>
+</html>

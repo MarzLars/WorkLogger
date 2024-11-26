@@ -38,6 +38,7 @@ class TimeTrackerUI:
         self.tracker = TimeTracker()
         self.update_job = None
         self.running = False  # Flag to control the running state
+        self.insertion_mode = False  # Flag to control insertion mode
 
         self._setup_ui()
 
@@ -49,6 +50,7 @@ class TimeTrackerUI:
         self._create_control_buttons()
         self._create_log_frame()
         self._create_debug_buttons()
+        self._create_insertion_mode_controls()
         self.display_logs()
 
     def _create_main_frame(self):
@@ -121,6 +123,40 @@ class TimeTrackerUI:
         self.test_button = customtkinter.CTkButton(master=self.frame, text="Run Tests", command=self.run_tests, width=100)
         self.test_button.pack(fill="x", padx=5, pady=5)
         self.test_button.pack_forget()
+
+    def _create_insertion_mode_controls(self):
+        """Create controls for insertion mode."""
+        self.insertion_mode_button = customtkinter.CTkButton(master=self.frame, text="Toggle Insertion Mode", command=self.toggle_insertion_mode, width=100)
+        self.insertion_mode_button.pack(fill="x", padx=5, pady=5)
+
+        self.insertion_mode_frame = customtkinter.CTkFrame(master=self.frame)
+        self.insertion_mode_frame.pack(fill="both", padx=5, pady=5, expand=True)
+        self.insertion_mode_frame.pack_forget()
+
+        self.description_input = customtkinter.CTkEntry(master=self.insertion_mode_frame, placeholder_text="Description")
+        self.description_input.pack(fill="x", padx=5, pady=5)
+
+        self.date_dropdown = customtkinter.CTkComboBox(master=self.insertion_mode_frame, values=self._get_date_options())
+        self.date_dropdown.pack(fill="x", padx=5, pady=5)
+
+        self.hours_input = customtkinter.CTkEntry(master=self.insertion_mode_frame, placeholder_text="Hours")
+        self.hours_input.pack(fill="x", padx=5, pady=5)
+
+        self.minutes_input = customtkinter.CTkEntry(master=self.insertion_mode_frame, placeholder_text="Minutes")
+        self.minutes_input.pack(fill="x", padx=5, pady=5)
+
+        self.seconds_input = customtkinter.CTkEntry(master=self.insertion_mode_frame, placeholder_text="Seconds")
+        self.seconds_input.pack(fill="x", padx=5, pady=5)
+
+        self.save_button = customtkinter.CTkButton(master=self.insertion_mode_frame, text="Save", command=self.save_insertion_mode, width=100)
+        self.save_button.pack(fill="x", padx=5, pady=5)
+
+        self.cancel_button = customtkinter.CTkButton(master=self.insertion_mode_frame, text="Cancel", command=self.toggle_insertion_mode, width=100)
+        self.cancel_button.pack(fill="x", padx=5, pady=5)
+
+    def _get_date_options(self):
+        """Get date options for the dropdown menu."""
+        return [datetime.now().strftime("%Y-%m-%d")]
 
     # Button Actions
     def start(self):
@@ -241,6 +277,25 @@ class TimeTrackerUI:
             self.tracker.elapsed_time += 10 * 3600 + 10 * 60 + 10  # Increment by 10 hours, 10 minutes, 10 seconds
             print(f"Elapsed Time: {self.tracker.elapsed_time // 3600} hours, {(self.tracker.elapsed_time % 3600) // 60} minutes, {self.tracker.elapsed_time % 60} seconds")
             self.root.after(1000, self.increment_time)  # Schedule the next increment in 1 second
+
+    def toggle_insertion_mode(self):
+        """Toggle the visibility of insertion mode controls."""
+        if self.insertion_mode:
+            self.insertion_mode_frame.pack_forget()
+        else:
+            self.insertion_mode_frame.pack(fill="both", padx=5, pady=5, expand=True)
+        self.insertion_mode = not self.insertion_mode
+
+    def save_insertion_mode(self):
+        """Save the log entry in insertion mode."""
+        description = self.description_input.get()
+        hours = int(self.hours_input.get())
+        minutes = int(self.minutes_input.get())
+        seconds = int(self.seconds_input.get())
+        time_spent = hours * 3600 + minutes * 60 + seconds
+        self.tracker.log_time_insertion_mode(description, time_spent)
+        self.toggle_insertion_mode()
+        self.display_logs()
 
     def run(self):
         """Run the Tkinter main loop."""
