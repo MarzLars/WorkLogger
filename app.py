@@ -54,5 +54,12 @@ def set_delimiter():
     csv_delimiter = request.json.get('delimiter', ',')
     return jsonify({'status': 'delimiter set'})
 
+@app.route('/export', methods=['GET'])
+def export():
+    if os.path.exists('time_log.csv'):
+        return send_file('time_log.csv', as_attachment=True)
+    else:
+        return jsonify({'error': 'No logs to export'}), 404
+
 if __name__ == "__main__":
     app.run(debug=True)

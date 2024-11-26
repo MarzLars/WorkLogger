@@ -42,3 +42,15 @@
     padding: 5px;
     font-size: 1em;
 }
+
+/* Styles for the export button */
+.export-button {
+    margin-top: 20px;
+    text-align: left;
+}
+
+.export-button button {
+    padding: 10px 20px;
+    font-size: 1em;
+    cursor: pointer;
+}

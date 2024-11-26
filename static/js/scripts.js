@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const elapsedTimeDisplay = document.getElementById('elapsed-time');
     const logsContainer = document.getElementById('logs');
     const delimiterSelect = document.getElementById('delimiter');
+    const exportButton = document.getElementById('export-button');
 
     let timerInterval;
 
@@ -51,6 +52,21 @@ document.addEventListener('DOMContentLoaded', function() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ delimiter: selectedDelimiter })
         });
+    });
+
+    exportButton.addEventListener('click', function() {
+        fetch('/export', { method: 'GET' })
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = 'time_log.csv';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+            });
     });
 
     function startTimer() {
