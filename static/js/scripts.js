@@ -6,8 +6,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const logsContainer = document.getElementById('logs');
     const delimiterSelect = document.getElementById('delimiter');
     const exportButton = document.getElementById('export-button');
+    const insertionModeButton = document.getElementById('insertion-mode-button');
+    const saveButton = document.getElementById('save-button');
+    const cancelButton = document.getElementById('cancel-button');
+    const descriptionInput = document.getElementById('description-input');
+    const timeInput = document.getElementById('time-input');
 
     let timerInterval;
+    let insertionMode = false;
 
     startButton.addEventListener('click', function() {
         fetch('/start', { method: 'POST' })
@@ -69,6 +75,32 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     });
 
+    insertionModeButton.addEventListener('click', function() {
+        insertionMode = !insertionMode;
+        toggleInsertionMode();
+    });
+
+    saveButton.addEventListener('click', function() {
+        const description = descriptionInput.value;
+        const timeSpent = timeInput.value;
+        fetch('/log_time', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ description: description, time_spent: timeSpent })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'logged') {
+                    fetchLogs();
+                    toggleInsertionMode();
+                }
+            });
+    });
+
+    cancelButton.addEventListener('click', function() {
+        toggleInsertionMode();
+    });
+
     function startTimer() {
         if (!timerInterval) {
             timerInterval = setInterval(updateElapsedTime, 1000);
@@ -110,6 +142,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     logsContainer.appendChild(logElement);
                 });
             });
+    }
+
+    function toggleInsertionMode() {
+        if (insertionMode) {
+            document.getElementById('insertion-mode').style.display = 'block';
+        } else {
+            document.getElementById('insertion-mode').style.display = 'none';
+        }
     }
 
     fetchLogs();

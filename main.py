@@ -1,10 +1,11 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, send_file
 from time_tracker import TimeTracker
 import os
 import csv
 
 app = Flask(__name__)
 tracker = TimeTracker()
+csv_delimiter = ','
 
 # Route to render the main HTML page
 @app.route('/')
@@ -43,14 +44,29 @@ def logs():
     logs = []
     if os.path.exists('time_log.csv'):
         with open('time_log.csv', mode='r') as file:
-            reader = csv.reader(file, delimiter=';')
+            reader = csv.reader(file, delimiter=csv_delimiter)
             for row in reader:
-                if row[0] == "sep=;":
+                if row[0] == f"sep={csv_delimiter}":
                     continue
                 if row == ['Description', 'Date', 'Week', 'Time Spent', 'Hours', 'Minutes', 'Seconds']:
                     continue
                 logs.append(row)
     return jsonify({'logs': logs})
+
+# Route to set the CSV delimiter
+@app.route('/set_delimiter', methods=['POST'])
+def set_delimiter():
+    global csv_delimiter
+    csv_delimiter = request.json.get('delimiter', ',')
+    return jsonify({'status': 'delimiter set'})
+
+# Route to export the logs
+@app.route('/export', methods=['GET'])
+def export():
+    if os.path.exists('time_log.csv'):
+        return send_file('time_log.csv', as_attachment=True)
+    else:
+        return jsonify({'error': 'No logs to export'}), 404
 
 if __name__ == "__main__":
     app.run(debug=True)
