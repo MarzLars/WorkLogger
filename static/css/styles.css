@@ -1,0 +1,44 @@
+/* Styles for the main container */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+    font-family: Arial, sans-serif;
+}
+
+/* Styles for the elapsed time display */
+.elapsed-time {
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+
+/* Styles for the control buttons */
+.controls button {
+    padding: 10px 20px;
+    margin: 5px;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+/* Styles for the log section */
+.logs {
+    margin-top: 20px;
+    text-align: left;
+}
+
+/* Styles for the CSV delimiter dropdown */
+.delimiter-selection {
+    margin-top: 20px;
+    text-align: left;
+}
+
+.delimiter-selection label {
+    font-size: 1em;
+    margin-right: 10px;
+}
+
+.delimiter-selection select {
+    padding: 5px;
+    font-size: 1em;
+}
