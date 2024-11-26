@@ -69,5 +69,19 @@ def export():
     else:
         return jsonify({'error': 'No logs to export'}), 404
 
+# Route to toggle insertion mode
+@app.route('/toggle_insertion_mode', methods=['POST'])
+def toggle_insertion_mode():
+    insertion_mode = request.json.get('insertion_mode', False)
+    return jsonify({'status': 'insertion mode toggled', 'insertion_mode': insertion_mode})
+
+# Route to log time in insertion mode
+@app.route('/log_time', methods=['POST'])
+def log_time():
+    description = request.json.get('description', '')
+    time_spent = request.json.get('time_spent', 0)
+    tracker.log_time(description, time_spent)
+    return jsonify({'status': 'logged'})
+
 if __name__ == "__main__":
     app.run(debug=True)

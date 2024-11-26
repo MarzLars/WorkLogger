@@ -29,6 +29,15 @@
         <div class="export-button">
             <button id="export-button">Export Logs</button>
         </div>
+        <div class="insertion-mode">
+            <button id="insertion-mode-button">Toggle Insertion Mode</button>
+        </div>
+        <div id="insertion-mode" style="display: none;">
+            <input type="text" id="description-input" placeholder="Description">
+            <input type="number" id="time-input" placeholder="Time Spent (seconds)">
+            <button id="save-button">Save</button>
+            <button id="cancel-button">Cancel</button>
+        </div>
     </div>
     <script src="/static/js/scripts.js"></script>
 </body>
