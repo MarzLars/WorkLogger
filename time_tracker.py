@@ -144,9 +144,9 @@ class TimeTracker:
         """
         file_exists = os.path.isfile(csv_file_path)
         with open(csv_file_path, mode='a', newline='') as file:
-            writer = csv.writer(file, delimiter=';')
+            writer = csv.writer(file, delimiter=',')
             if not file_exists:
-                file.write("sep=;\n")
+                file.write("sep=,\n")
                 writer.writerow(['Description', 'Date', 'Week', 'Time Spent', 'Hours', 'Minutes', 'Seconds'])
             writer.writerow([description, current_date, week_number, hours + (minutes / 60), int(hours), int(minutes), int(seconds)])
 
@@ -164,6 +164,48 @@ class TimeTracker:
         
         if not os.path.exists(csv_file_path):
             with open(csv_file_path, mode='w', newline='') as file:
-                writer = csv.writer(file, delimiter=';')
-                file.write("sep=;\n")
+                writer = csv.writer(file, delimiter=',')
+                file.write("sep=,\n")
                 writer.writerow(['Description', 'Date', 'Week', 'Time Spent', 'Hours', 'Minutes', 'Seconds'])
+
+    def log_time_insertion_mode(self, description, time_spent, file_path='time_log.xlsx', csv_file_path='time_log.csv'):
+        """
+        Log the specified time to both Excel and CSV files in insertion mode.
+        """
+        hours, remainder = divmod(time_spent, 3600)
+        minutes, seconds = divmod(remainder, 60)
+        now = datetime.now()
+        current_date = now.date()
+        week_number = now.isocalendar()[1]
+        
+        # Log to Excel
+        if os.path.exists(file_path):
+            workbook = load_workbook(file_path)
+            sheet = workbook.active
+        else:
+            workbook = Workbook()
+            sheet = workbook.active
+            sheet.append(['Description', 'Date', 'Week', 'Time Spent', 'Hours', 'Minutes', 'Seconds'])
+            self._apply_header_style(sheet)
+
+        row = [description, current_date, week_number, f"={int(hours)} + ({int(minutes)}/60)", int(hours), int(minutes), int(seconds)]
+        sheet.append(row)
+        
+        self._apply_row_style(sheet, sheet.max_row)
+        self._adjust_column_widths(sheet)
+        workbook.save(file_path)
+        
+        # Log to CSV
+        self.log_time_to_csv(description, current_date, week_number, hours, minutes, seconds, csv_file_path)
+
+    def log_time_to_csv_insertion_mode(self, description, current_date, week_number, hours, minutes, seconds, csv_file_path):
+        """
+        Log the specified time to a CSV file in insertion mode.
+        """
+        file_exists = os.path.isfile(csv_file_path)
+        with open(csv_file_path, mode='a', newline='') as file:
+            writer = csv.writer(file, delimiter=',')
+            if not file_exists:
+                file.write("sep=,\n")
+                writer.writerow(['Description', 'Date', 'Week', 'Time Spent', 'Hours', 'Minutes', 'Seconds'])
+            writer.writerow([description, current_date, week_number, hours + (minutes / 60), int(hours), int(minutes), int(seconds)])
