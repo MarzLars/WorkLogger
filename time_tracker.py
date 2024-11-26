@@ -144,9 +144,9 @@ class TimeTracker:
         """
         file_exists = os.path.isfile(csv_file_path)
         with open(csv_file_path, mode='a', newline='') as file:
-            writer = csv.writer(file, delimiter=',')
+            writer = csv.writer(file, delimiter=csv_delimiter)
             if not file_exists:
-                file.write("sep=,\n")
+                file.write(f"sep={csv_delimiter}\n")
                 writer.writerow(['Description', 'Date', 'Week', 'Time Spent', 'Hours', 'Minutes', 'Seconds'])
             writer.writerow([description, current_date, week_number, hours + (minutes / 60), int(hours), int(minutes), int(seconds)])
 
@@ -164,8 +164,8 @@ class TimeTracker:
         
         if not os.path.exists(csv_file_path):
             with open(csv_file_path, mode='w', newline='') as file:
-                writer = csv.writer(file, delimiter=',')
-                file.write("sep=,\n")
+                writer = csv.writer(file, delimiter=csv_delimiter)
+                file.write(f"sep={csv_delimiter}\n")
                 writer.writerow(['Description', 'Date', 'Week', 'Time Spent', 'Hours', 'Minutes', 'Seconds'])
 
     def log_time_insertion_mode(self, description, time_spent, file_path='time_log.xlsx', csv_file_path='time_log.csv'):
@@ -204,8 +204,8 @@ class TimeTracker:
         """
         file_exists = os.path.isfile(csv_file_path)
         with open(csv_file_path, mode='a', newline='') as file:
-            writer = csv.writer(file, delimiter=',')
+            writer = csv.writer(file, delimiter=csv_delimiter)
             if not file_exists:
-                file.write("sep=,\n")
+                file.write(f"sep={csv_delimiter}\n")
                 writer.writerow(['Description', 'Date', 'Week', 'Time Spent', 'Hours', 'Minutes', 'Seconds'])
             writer.writerow([description, current_date, week_number, hours + (minutes / 60), int(hours), int(minutes), int(seconds)])
